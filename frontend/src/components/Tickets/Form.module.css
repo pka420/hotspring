@@ -1,0 +1,14 @@
+.paper {
+    padding: 20px;
+    backdrop-filter: "blur(3px)";
+    background-color: 'rgba(0,0,30,0.4)';
+}
+
+.formContainer {
+    padding: 20px;
+}
+
+.underline {
+    border-bottom: 1px solid #000;
+    margin: 20px 10px;
+}
