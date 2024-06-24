@@ -1,9 +1,10 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getLocation } from "../../store/geoSlice";
-import { getKeywordSuggestions } from "../../store/ticketSlice";
-import { AppDispatch } from "../../store/store";
+import { getLocation } from "../../../store/geoSlice";
+import { getEvents, getKeywordSuggestions } from "../../../store/ticketSlice";
+import { AppDispatch, RootState } from "../../../store/store";
 import {
+    Autocomplete,
     Box,
     Button,
     Checkbox,
@@ -18,7 +19,6 @@ import {
     Stack,
     TextField,
     Typography,
-    Autocomplete,
 } from "@mui/material";
 
 import classes from "./Form.module.css";
@@ -26,8 +26,10 @@ import classes from "./Form.module.css";
 const Form = () => {
     const dispatch: AppDispatch = useDispatch();
 
-    const location = useSelector((state: any) => state.geo.location);
-    const suggestions = useSelector((state: any) => state.tickets.suggestions);
+    const location = useSelector((state: RootState) => state.geo.location);
+    const suggestions = useSelector((state: RootState) =>
+        state.tickets.suggestions
+    );
 
     const categories = [
         "Music",
@@ -55,21 +57,22 @@ const Form = () => {
 
     const handleAutoDetect = (event: React.ChangeEvent<HTMLInputElement>) => {
         setState({ ...state, autoDetect: event.target.checked, location: "" });
-        console.log(event.target.checked);
-        console.log(state);
-        //dispatch(getLocation());
+        if (event.target.checked) {
+            dispatch(getLocation());
+        }
     };
 
     const handleKeywordChange = (value: string) => {
-        console.log('handleKeywordChange');
+        console.log("handleKeywordChange");
         console.log(value);
         setState({ ...state, keyword: value });
         dispatch(getKeywordSuggestions(value));
-    }
+    };
 
     const onSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         console.log(state);
+        dispatch(getEvents(state));
     };
 
     return (
@@ -95,10 +98,13 @@ const Form = () => {
                                         value={state.keyword}
                                         options={suggestions}
                                         renderInput={(params) => (
-                                            <TextField {...params} label="Keyword" />
+                                            <TextField
+                                                {...params}
+                                                label="Keyword"
+                                            />
                                         )}
-                                        onInputChange={(event, value) => handleKeywordChange(value)}
-
+                                        onInputChange={(event, value) =>
+                                            handleKeywordChange(value)}
                                     />
                                 </Grid>
                                 <Grid item xs={6}>
@@ -122,10 +128,17 @@ const Form = () => {
                                             value={state.category}
                                             label="Age"
                                             onChange={(event) =>
-                                                setState({ ...state, category: event.target.value })}
+                                                setState({
+                                                    ...state,
+                                                    category:
+                                                        event.target.value,
+                                                })}
                                         >
                                             {categories.map((category) => (
-                                                <MenuItem key={category} value={category}>
+                                                <MenuItem
+                                                    key={category}
+                                                    value={category}
+                                                >
                                                     {category}
                                                 </MenuItem>
                                             ))}
@@ -144,7 +157,10 @@ const Form = () => {
                                         value={state.location}
                                         disabled={state.autoDetect}
                                         onChange={(event) =>
-                                            setState({ ...state, location: event.target.value })}
+                                            setState({
+                                                ...state,
+                                                location: event.target.value,
+                                            })}
                                     />
                                 </Grid>
                                 <Grid item xs={12}>
@@ -174,7 +190,8 @@ const Form = () => {
                                         control={
                                             <Checkbox
                                                 checked={state.autoDetect}
-                                                onChange={(event) => handleAutoDetect(event)}
+                                                onChange={(event) =>
+                                                    handleAutoDetect(event)}
                                             />
                                         }
                                     />
