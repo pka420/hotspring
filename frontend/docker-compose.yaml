@@ -1,0 +1,42 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:16
+    container_name: ${database_name:-hotspring_db}
+    env_file:
+      - ./backend/.env
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=${postgres_db_name}
+      - POSTGRES_USER=${postgres_db_username}
+      - POSTGRES_PASSWORD=${postgres_db_password}
+      - POSTGRES_HOST=db
+    volumes:
+      - /var/lib/postgresql/16/main/:/var/lib/postgresql/data
+  backend:
+    build: ./backend
+    env_file:
+      - ./backend/.env
+    container_name: ${backend_name:-hotspring_backend}
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+      - /etc/letsencrypt/:/etc/letsencrypt/
+      - /var/logs/hotspring_backend:/var/logs/hotspring_backend
+    depends_on:
+      - db
+  frontend:
+    build: ./frontend
+    container_name: ${frontend_name:-hotspring_frontend}
+    ports:
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/conf.d/default.conf:/etc/nginx/conf.d/default.conf
+      - /etc/letsencrypt/:/etc/letsencrypt/
+    depends_on:
+      - backend
+
