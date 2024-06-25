@@ -1,11 +1,6 @@
 import React from "react";
 import { Box, Tab, Tabs } from "@mui/material";
 import classes from "./Navbar.module.css";
-import { useSelector } from "react-redux";
-import { RootState } from "../../../store/store";
-import Form from "../../Tickets/SearchForm/Form";
-import Favourites from "../../Tickets/Favourites/Favourites";
-import Results from "../../Tickets/Results/Results";
 
 const Navbar = () => {
     const [state, setState] = React.useState<{ tab: number }>({
@@ -14,11 +9,10 @@ const Navbar = () => {
             : 0,
     });
 
-    const results = useSelector((state: RootState) => state.tickets.results);
-
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {
         setState({ tab: newValue });
         localStorage.setItem("selectedTab", String(newValue));
+        newValue === 0 ? window.location.href = "/" : window.location.href = "/favourites";
     };
 
     return (
@@ -31,17 +25,17 @@ const Navbar = () => {
                             value={state.tab}
                             aria-label="navbar"
                             className={classes.tabs}
+                            style={{ float: "right", marginRight: "30px"}}
                         >
-                            <Tab label="Search" className={classes.tab} />
-                            <Tab label="Favourites" className={classes.tab} />
+                            <Tab
+                                label={<span className={state.tab === 0 ? classes.tabSelected : classes.tab}>Search</span>}
+                            />
+                            <Tab
+                                label={<span className={state.tab === 1 ? classes.tabSelected : classes.tab}>Favourites</span>}
+                            />
                         </Tabs>
                     </Box>
                 </div>
-                {state.tab === 0 ? <Form /> : <Favourites />}
-                {results !== null &&
-                    <Results />
-                }
-
             </div>
         </>
     );

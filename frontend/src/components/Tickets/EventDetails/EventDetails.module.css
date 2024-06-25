@@ -40,3 +40,13 @@
 .expandIcon {
     margin-top: 4px;
 }
+
+.inFavourites {
+    background-color: "#f44336";
+    color: "#ffffff",
+}
+
+.notFavourites {
+    background-color: "#ffffff";
+    color: "#f44336",
+}

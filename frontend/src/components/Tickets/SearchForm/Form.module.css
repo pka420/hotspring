@@ -1,14 +1,22 @@
 .paper {
     padding: 20px;
-    backdrop-filter: "blur(3px)";
-    background-color: 'rgba(0,0,30,0.4)';
+    background-color: transparent;
+    border-radius: 10px;
+    border: 1px solid #8a8a8a;
+    backdrop-filter: blur(10px);
+    color: #fff;
 }
 
 .formContainer {
     padding: 20px;
+	background: transparent;
 }
 
-.underline {
-    border-bottom: 1px solid #000;
-    margin: 20px 10px;
+
+.formInput {
+    border: 1px solid #fff;
+    border-radius: 5px;
+    background-color: #fff;
+    color: #fff;
 }
+

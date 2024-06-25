@@ -1,12 +1,13 @@
 import React from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../../../store/store";
 import DataTable, { createTheme } from "react-data-table-component";
-import classes from "./Results.module.css";
-import { Box, Container, Typography } from "@mui/material";
+import classes from "./EventList.module.css";
+import { Box, Typography } from "@mui/material";
 import { formatDate } from "../../Utils/utils";
 import SortIcon from "@mui/icons-material/ArrowDownward";
 import EventDetails from "../EventDetails/EventDetails";
+import IconButton from "@mui/material/IconButton";
+import ExpandMore from "@mui/icons-material/ExpandMore";
+import ExpandLess from "@mui/icons-material/ExpandLess";
 
 createTheme("solarized", {
     text: {
@@ -37,10 +38,13 @@ interface TableColumn<T> {
     cell?: (row: T) => any;
 }
 
-const Resutls = () => {
-    const dispatch: AppDispatch = useDispatch();
-    const results = useSelector((state: RootState) => state.tickets.results);
+interface EventListProps {
+    data: any;
+    title: string;
+    fetchEvents: () => void;
+}
 
+const EventList: React.FC<EventListProps> = ({ data, title, fetchEvents }) => {
     const columns: TableColumn<any>[] = [
         {
             name: <Typography variant="h6">Date/Time</Typography>,
@@ -94,22 +98,42 @@ const Resutls = () => {
         },
     ];
 
+    const [row, setRow] = React.useState<any>(null);
+
     return (
         <>
             <Box p={10}>
                 <DataTable
                     title={<Typography variant="h4">Events</Typography>}
                     columns={columns}
-                    data={results._embedded.events}
+                    data={data._embedded.events}
                     pagination
                     highlightOnHover
                     sortIcon={<SortIcon />}
                     expandableRows={true}
-					expandableRowsComponent={ ({data}) => <EventDetails data={data} />}
+                    expandableRowsComponent={({ data }) => (
+                        <EventDetails data={data} fetchEvents={fetchEvents} />
+                    )}
+                    onRowExpandToggled={(expanded, row) => {
+                        setRow(expanded ? row : null);
+                    }}
+                    expandableRowExpanded={(newRow) => newRow === row}
+                    expandableIcon={{
+                        collapsed: (
+                            <IconButton size="small">
+                                <ExpandMore />
+                            </IconButton>
+                        ),
+                        expanded: (
+                            <IconButton size="small">
+                                <ExpandLess />
+                            </IconButton>
+                        ),
+                    }}
                 />
             </Box>
         </>
     );
 };
 
-export default Resutls;
+export default EventList;

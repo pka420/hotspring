@@ -13,9 +13,9 @@ const initialState: GeoState = {
 
 export const getLocation = createAsyncThunk<
     AxiosResponse<any, any>,
-    void,
+    undefined,
     { rejectValue: string }
->("getLocation", async (ip_address, thunkAPI) => {
+>("getLocation", async (params, thunkAPI) => {
     try {
         const resp = axiosInstance.get(`/api/geo-location`);
         return resp;
@@ -30,10 +30,10 @@ export const geoSlice = createSlice({
   reducers: {},
     extraReducers: (builder) => {
         builder
-            .addCase(getLocation.fulfilled, (state, action) => {
+            .addCase(getLocation.fulfilled, (state, action: PayloadAction<any>) => {
                 state.location = action.payload.data;
             })
-            .addCase(getLocation.rejected, (state, action) => {
+            .addCase(getLocation.rejected, (state) => {
                 state.location = '';
             });
   },

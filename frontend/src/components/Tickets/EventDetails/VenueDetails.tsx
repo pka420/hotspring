@@ -2,7 +2,6 @@ import React from "react";
 import classes from "./EventDetails.module.css";
 import {
     Button,
-    Chip,
     Collapse,
     Container,
     Divider,
@@ -10,14 +9,11 @@ import {
     Stack,
     Typography,
 } from "@mui/material";
-import IconButton, { IconButtonProps } from "@mui/material/IconButton";
-import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
-import FacebookIcon from "@mui/icons-material/Facebook";
-import TwitterIcon from "@mui/icons-material/Twitter";
-import InstagramIcon from "@mui/icons-material/Instagram";
-import { formatDate } from "../../Utils/utils";
+import Modal from 'react-modal';
+import { IconButtonProps } from "@mui/material/IconButton";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import MapComponent from "../GoogleMaps/MapComponent";
 
 interface ExpandMoreProps extends IconButtonProps {
     expand: boolean;
@@ -53,15 +49,17 @@ const CollapseMore = (props: ExpandMoreProps) => {
     );
 };
 
-const EventDetails = (data: any) => {
+
+const VenueDetails = (data: any) => {
+    console.log("venue details", data);
     const [expanded, setExpanded] = React.useState<number>(0);
+    const [showModal, setShowModal] = React.useState<boolean>(false);
     //expanded = 0 means none.
     // 1 for open hours, 2 for general and 3 for child.
     const handleExpandClick = (newValue: number) => {
         setExpanded(newValue);
     };
 
-    console.log(data.data);
     const boxOfficeInfo = data.data?.boxOfficeInfo ||
         {
             phoneNumberDetail: "No Phone Number Available",
@@ -73,6 +71,11 @@ const EventDetails = (data: any) => {
             generalRule: "No General Rule Available",
             childRule: "No Child Rule Available",
         };
+
+    const center = {
+        lat: parseInt(data.data.location.latitude),
+        lng: parseInt(data.data.location.longitude),
+    };
 
     return (
         <>
@@ -262,9 +265,48 @@ const EventDetails = (data: any) => {
                         </Typography>
                     </Stack>
                 </Stack>
+                <Stack
+                    direction="row"
+                    spacing={2}
+                    justifyContent="center"
+                    alignItems="center"
+                >
+                    <Modal
+                        isOpen={showModal}
+                        aria-labelledby="contained-modal-title-vcenter"
+                        onRequestClose={() => setShowModal(false)}
+                        style={{
+                            content: {
+                                top: "50%",
+                                left: "50%",
+                                right: "auto",
+                                bottom: "auto",
+                                marginRight: "-50%",
+                                transform: "translate(-50%, -50%)",
+                            },
+                        }}
+                    >
+                        <MapComponent center={center} />
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={() => setShowModal(false)}
+                        >
+                            Close
+                        </Button>
+                    </Modal>
+                    <Button
+                        variant="contained"
+                        color="error"
+                        onClick={() => setShowModal(true)}
+                    >
+                        Show Venue on Google Maps
+                    </Button>
+                    <Divider />
+                </Stack>
             </Container>
         </>
     );
 };
 
-export default EventDetails;
+export default VenueDetails;

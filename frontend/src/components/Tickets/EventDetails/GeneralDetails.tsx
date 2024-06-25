@@ -1,15 +1,10 @@
 import React from "react";
 import classes from "./EventDetails.module.css";
 import {
-    Button,
     Chip,
-    Collapse,
     Container,
     Divider,
-    Link,
     Stack,
-    Tab,
-    Tabs,
     Typography,
 } from "@mui/material";
 import FacebookIcon from "@mui/icons-material/Facebook";
@@ -17,31 +12,55 @@ import TwitterIcon from "@mui/icons-material/Twitter";
 import InstagramIcon from "@mui/icons-material/Instagram";
 import { formatDate } from "../../Utils/utils";
 
-const GeneralDetails = (data: any) => {
-    console.log(data);
-    const externalLinks = data.data?._embedded?.attractions[0]
-        ?.externalLinks ||
-        {
-            facebook: null,
-            twitter: null,
-            instagram: null,
-        };
+interface GeneralDetailsProps {
+    data: any;
+    genreString: string;
+}
 
-    const seatmap = data.data?.seatmap || null;
+const GeneralDetails: React.FC<GeneralDetailsProps> = ({data, genreString}) => {
+    const attractions = data?._embedded?.attractions || null;
 
-    const classifications = data.data?.classifications || null;
+    const externalLinks = attractions !== null && attractions.length !== 0 ?
+        attractions[0].externalLinks
+        : null;
+
+    let socialLinks = {
+        facebook: null,
+        twitter: null,
+        instagram: null,
+    };
+
+    if (externalLinks !== null) {
+        try {
+            socialLinks.facebook = externalLinks.facebook[0].url;
+        } catch (error) {
+            //console.log(error);
+        }
+        try {
+            socialLinks.twitter = externalLinks.twitter[0].url;
+        } catch (error) {
+            //console.log(error);
+        }
+        try {
+            socialLinks.instagram = externalLinks.instagram[0].url;
+        } catch (error) {
+           // console.log(error);
+        }
+    }
+
+    const seatmap = data?.seatmap || null;
 
     return (
         <>
             <Container component="main" maxWidth="md">
                 <Stack
-                    spacing={1}
+                    spacing={3}
                     direction="row"
                     justifyContent="center"
                     alignItems="center"
                 >
                     <Stack
-                        spacing={1}
+                        spacing={0.3}
                         direction="column"
                         justifyContent="center"
                         alignItems="center"
@@ -51,7 +70,7 @@ const GeneralDetails = (data: any) => {
                         </Typography>
                         <Typography variant="body1">
                             {formatDate(
-                                data.data.dates.start.dateTime,
+                                data.dates.start.dateTime,
                             )}
                         </Typography>
                         <Typography variant="h6">
@@ -68,19 +87,11 @@ const GeneralDetails = (data: any) => {
                                 }
                                 spacing={2}
                             >
-                                {data.data._embedded.attractions !==
-                                        undefined &&
-                                    data.data._embedded.attractions
-                                        .map(
-                                            (
-                                                attraction: any,
-                                            ) => (
-                                                <span
-                                                    key={attraction
-                                                        .id}
-                                                >
-                                                    {attraction
-                                                        .name}
+                                {attractions !== null &&
+                                    attractions.map(
+                                            (attraction: any) => (
+                                                <span key={attraction.id} >
+                                                    {attraction.name}
                                                 </span>
                                             ),
                                         )}
@@ -90,7 +101,7 @@ const GeneralDetails = (data: any) => {
                             <strong>Venue</strong>
                         </Typography>
                         <Typography variant="body1">
-                            {data.data._embedded.venues.map((
+                            {data._embedded.venues.map((
                                 venue: any,
                             ) => (
                                 <span key={venue.id}>
@@ -101,25 +112,15 @@ const GeneralDetails = (data: any) => {
                         <Typography variant="h6">
                             <strong>Genres</strong>
                         </Typography>
-                        <Typography variant="body1">
-                            {classifications !== null ?
-                            {classifications.forEach((
-                                classification: any,
-                            ) => (
-                                <span key={classification.?.id}>
-                                    {classification.?.name}
-                                </span>
-                            ))}
-                            : "No genres available"
-                            }
-                        </Typography>
-
+                            <Typography variant="body1">
+                                {genreString}
+                            </Typography>
                         <Typography variant="h6">
                             <strong>Price Ranges</strong>
                         </Typography>
                         <Typography variant="body1">
-                            {data.data.priceRanges !== undefined &&
-                                data.data.priceRanges.map(
+                            {data.priceRanges !== undefined &&
+                                data.priceRanges.map(
                                     (priceRange: any) => (
                                         <span key={priceRange.id}>
                                             {priceRange.min} - {priceRange.max}
@@ -133,7 +134,7 @@ const GeneralDetails = (data: any) => {
                         <Typography variant="h6">
                             <strong>Ticket Status</strong>
                         </Typography>
-                        {data.data.dates.status.code
+                        {data.dates.status.code
                                 .toLowerCase() === "onsale"
                             ? (
                                 <Chip
@@ -143,7 +144,7 @@ const GeneralDetails = (data: any) => {
                                     }}
                                 />
                             )
-                            : data.data.dates.status.code
+                            : data.dates.status.code
                                     .toLowerCase() ===
                                     "offsale"
                             ? (
@@ -154,7 +155,7 @@ const GeneralDetails = (data: any) => {
                                     }}
                                 />
                             )
-                            : data.data.dates.status.code
+                            : data.dates.status.code
                                     .toLowerCase() ===
                                     "cancelled"
                             ? (
@@ -166,7 +167,7 @@ const GeneralDetails = (data: any) => {
                                     }}
                                 />
                             )
-                            : data.data.dates.status.code
+                            : data.dates.status.code
                                     .toLowerCase() ===
                                     "postponed"
                             ? (
@@ -189,7 +190,7 @@ const GeneralDetails = (data: any) => {
                             <strong>Buy Tickets At</strong>
                         </Typography>
                         <a
-                            href={data.data.url}
+                            href={data.url}
                             target="_blank"
                             rel="noreferrer"
                         >
@@ -197,45 +198,45 @@ const GeneralDetails = (data: any) => {
                         </a>
                         <Stack direction="row" spacing={2}>
                             {externalLinks !== null && (
-                            <Typography variant="h6">
-                                <strong>Share On:</strong>
-                            </Typography>
+                                <Typography variant="h6">
+                                    <strong>Share On:</strong>
+                                </Typography>
                             )}
 
-                            {externalLinks.facebook !== null && (
-                            <a
-                                href={externalLinks.facebook[0].url}
-                                target="_blank"
-                                rel="noreferrer"
-                            >
-                                <FacebookIcon />
-                            </a>
+                            {socialLinks.facebook !== null && (
+                                <a
+                                    href={socialLinks.facebook}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                >
+                                    <FacebookIcon />
+                                </a>
                             )}
-                            {externalLinks.twitter !== null && (
-                                    <a
-                                        href={externalLinks.twitter[0].url}
-                                        target="_blank"
-                                        rel="noreferrer"
-                                    >
-                                        <TwitterIcon />
-                                    </a>
-                                )}
-                            {externalLinks.instagram !== null && (
-                                    <a
-                                        href={externalLinks.instagram[0].url}
-                                        target="_blank"
-                                        rel="noreferrer"
-                                    >
-                                        <InstagramIcon />
-                                    </a>
-                                )}
+                            {socialLinks.twitter !== null && (
+                                <a
+                                    href={socialLinks.twitter}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                >
+                                    <TwitterIcon />
+                                </a>
+                            )}
+                            {socialLinks.instagram !== null && (
+                                <a
+                                    href={externalLinks.instagram}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                >
+                                    <InstagramIcon />
+                                </a>
+                            )}
                         </Stack>
                     </Stack>
                     <div>
-                        {seatmap !== undefined
+                        {seatmap !== null
                             ? (
                                 <img
-                                    src={data.data.seatmap
+                                    src={data.seatmap
                                         .staticUrl}
                                     alt="seatmap"
                                     className={classes.seatmap}
