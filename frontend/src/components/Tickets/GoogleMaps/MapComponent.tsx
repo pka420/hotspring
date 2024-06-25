@@ -1,48 +1,71 @@
 import React from "react";
-import { GoogleMap, useJsApiLoader } from "@react-google-maps/api";
+import { useEffect, useState } from "react";
+import { GoogleMap, MarkerF, useLoadScript } from "@react-google-maps/api";
+import Backdrop from "@mui/material/Backdrop";
+import CircularProgress from "@mui/material/CircularProgress";
+
+interface MapProps {
+    center: { lat: number; lng: number };
+}
 
 const containerStyle = {
     width: "400px",
     height: "400px",
 };
 
-interface MapComponentProps {
-    center: {
-        lat: number;
-        lng: number;
-    };
-}
-
-const MapComponent: React.FC<MapComponentProps> = ({ center }) => {
-    const { isLoaded } = useJsApiLoader({
-        id: "google-map-script",
-        googleMapsApiKey: "AIzaSyBww_Z4tCWpJt131BjHSKyXBdBbWrK565M",
+const MapComponent: React.FC<MapProps> = ({ center }) => {
+    console.log("in MapComponent", center);
+    const [latitudeLongitudeLoaded, setLatitudeLongitudeLoaded] = useState<
+        boolean
+    >(false);
+    const { isLoaded } = useLoadScript({
+        googleMapsApiKey: process.env.REACT_APP_GOOGLEMAP_API_KEY as string,
     });
 
-    const [map, setMap] = React.useState<google.maps.Map | null>(null);
+    useEffect(() => {
+        if (!isNaN(center.lat) && !isNaN(center.lng)) {
+            setLatitudeLongitudeLoaded(true);
+        } else {
+            console.log("Invalid latitude and longitude");
+        }
+    }, [center]);
 
-    const onLoad = React.useCallback((map: google.maps.Map) => {
-        const bounds = new window.google.maps.LatLngBounds(center);
-        map.fitBounds(bounds);
-        setMap(map);
-    }, []);
 
-    const onUnmount = React.useCallback((map: google.maps.Map) => {
-        setMap(null);
-    }, []);
-
-    return isLoaded
-        ? (
-            <GoogleMap
-                mapContainerStyle={containerStyle}
-                center={center}
-                zoom={10}
-                onLoad={onLoad}
-                onUnmount={onUnmount}
-            >
-            </GoogleMap>
-        )
-        : <></>;
+    return (
+        <div>
+            {latitudeLongitudeLoaded
+                ? (
+                    <div>
+                        {isLoaded
+                            ? (
+                                <div>
+                                    <GoogleMap
+                                        mapContainerStyle={containerStyle}
+                                        center={center}
+                                        zoom={10}
+                                    >
+                                        <MarkerF
+                                            position={center}
+                                        />
+                                    </GoogleMap>
+                                    <GoogleMap zoom={15} center={center}>
+                                    </GoogleMap>
+                                </div>
+                            )
+                            : (
+                                <Backdrop open={true}>
+                                    <CircularProgress color="inherit" />
+                                </Backdrop>
+                            )}
+                    </div>
+                )
+                : (
+                    <Backdrop open={true}>
+                        <CircularProgress color="inherit" />
+                    </Backdrop>
+                )}
+        </div>
+    );
 };
 
-export default React.memo(MapComponent);
+export default MapComponent;

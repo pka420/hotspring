@@ -51,7 +51,6 @@ const CollapseMore = (props: ExpandMoreProps) => {
 
 
 const VenueDetails = (data: any) => {
-    console.log("venue details", data);
     const [expanded, setExpanded] = React.useState<number>(0);
     const [showModal, setShowModal] = React.useState<boolean>(false);
     //expanded = 0 means none.
@@ -73,8 +72,8 @@ const VenueDetails = (data: any) => {
         };
 
     const center = {
-        lat: parseInt(data.data.location.latitude),
-        lng: parseInt(data.data.location.longitude),
+        lat: parseFloat(data.data.location.latitude),
+        lng: parseFloat(data.data.location.longitude),
     };
 
     return (

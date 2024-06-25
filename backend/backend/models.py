@@ -1,11 +1,11 @@
 from django.db import models
 
 class Favourites(models.Model):
-    name = models.CharField(max_length=100)
-    date = models.DateTimeField()
-    location = models.CharField(max_length=100)
-    description = models.TextField()
-    url = models.URLField(max_length=200)
+    event_id = models.CharField(max_length=100, primary_key=True)
+    date = models.DateTimeField(null=True)
+    name = models.CharField(max_length=100, blank=True)
+    category = models.CharField(max_length=100, blank=True)
+    venue = models.CharField(max_length=100, blank=True)
 
     def __str__(self):
         return self.name

@@ -13,6 +13,7 @@ DEBUG = os.getenv("django_debug_mode")
 CONSUMER_KEY = os.getenv("consumer_key")
 CONSUMER_SECRET = os.getenv("consumer_secret")
 IPINFO_TOKEN = os.getenv("ipinfo_token")
+GOOGLE_MAPS_API_KEY = os.getenv("google_maps_api_key")
 SITE_URL = os.getenv("site_url")
 
 ALLOWED_HOSTS = [ '*' ]
@@ -24,6 +25,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+	'rest_framework',
     'backend',
     'corsheaders',
 ]
