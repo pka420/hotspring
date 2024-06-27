@@ -2,13 +2,14 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from '@reduxjs/toolkit'
 import axiosInstance from './axios';
 import { AxiosResponse } from "axios";
+import { notificationActions } from "./notificationSlice";
 
 export interface GeoState {
-  location: string
+  location: any
 }
 
 const initialState: GeoState = {
-  location: ''
+  location: {}
 }
 
 export const getLocation = createAsyncThunk<
@@ -20,6 +21,7 @@ export const getLocation = createAsyncThunk<
         const resp = axiosInstance.get(`/api/geo-location`);
         return resp;
     } catch (error: any) {
+        thunkAPI.dispatch(notificationActions.setStatus({ type: "error", title: "Error finding your Location", message: JSON.stringify(error.response.data) }));
         return thunkAPI.rejectWithValue(error.response.data);
     }
 });
@@ -34,7 +36,7 @@ export const geoSlice = createSlice({
                 state.location = action.payload.data;
             })
             .addCase(getLocation.rejected, (state) => {
-                state.location = '';
+                state.location = {};
             });
   },
 })

@@ -6,10 +6,11 @@ import {
     Container,
     Divider,
     Link,
+    Grid,
     Stack,
     Typography,
 } from "@mui/material";
-import Modal from 'react-modal';
+import Modal from "react-modal";
 import { IconButtonProps } from "@mui/material/IconButton";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
@@ -49,7 +50,6 @@ const CollapseMore = (props: ExpandMoreProps) => {
     );
 };
 
-
 const VenueDetails = (data: any) => {
     const [expanded, setExpanded] = React.useState<number>(0);
     const [showModal, setShowModal] = React.useState<boolean>(false);
@@ -59,17 +59,21 @@ const VenueDetails = (data: any) => {
         setExpanded(newValue);
     };
 
-    const boxOfficeInfo = data.data?.boxOfficeInfo ||
-        {
-            phoneNumberDetail: "No Phone Number Available",
-            openHoursDetail: "No Open Hours Available",
-        };
+    const boxOfficeInfo = {
+        ...data.data?.boxOfficeInfo,
+        openHoursDetail: data.data?.boxOfficeInfo?.openHoursDetail ??
+            "No Open Hours Available",
+        phoneNumberDetail: data.data?.boxOfficeInfo?.phoneNumberDetail ??
+            "No Phone Number Available",
+    };
 
-    const generalInfo = data.data?.generalInfo ||
-        {
-            generalRule: "No General Rule Available",
-            childRule: "No Child Rule Available",
-        };
+    const generalInfo = {
+        ...data.data?.generalInfo,
+        generalRule: data.data?.generalInfo?.generalRule ??
+            "No General Rule Available",
+        childRule: data.data?.generalInfo?.childRule ??
+            "No Child Rule Available",
+    };
 
     const center = {
         lat: parseFloat(data.data.location.latitude),
@@ -79,18 +83,8 @@ const VenueDetails = (data: any) => {
     return (
         <>
             <Container component="main" maxWidth="md">
-                <Stack
-                    direction="row"
-                    spacing={2}
-                    justifyContent="center"
-                    alignItems="center"
-                >
-                    <Stack
-                        direction="column"
-                        spacing={1}
-                        justifyContent="center"
-                        alignItems="center"
-                    >
+                <Grid container spacing={2}>
+                         <Grid item xs={4}>
                         <Typography variant="h6">
                             <strong>Name</strong>
                         </Typography>
@@ -123,13 +117,8 @@ const VenueDetails = (data: any) => {
                         <Typography variant="body1">
                             {boxOfficeInfo.phoneNumberDetail}
                         </Typography>
-                    </Stack>
-                    <Stack
-                        direction="column"
-                        spacing={1}
-                        justifyContent="center"
-                        alignItems="center"
-                    >
+                    </Grid>
+                    <Grid item xs={8}>
                         <Typography variant="h6">
                             <strong>Open Hours</strong>
                         </Typography>
@@ -262,8 +251,8 @@ const VenueDetails = (data: any) => {
                                     </>
                                 )}
                         </Typography>
-                    </Stack>
-                </Stack>
+                    </Grid>
+                </Grid>
                 <Stack
                     direction="row"
                     spacing={2}

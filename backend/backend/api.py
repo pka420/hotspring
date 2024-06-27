@@ -14,7 +14,7 @@ ticketmaster_url = "https://app.ticketmaster.com/discovery/v2/"
 google_maps_url = "https://maps.googleapis.com/maps/api/geocode/json"
 
 unit = "miles"
-params_list = ["location", "distance", "category", "keyword"]
+params_list = ["location", "distance", "category", "keyword", "location_type"]
 
 category_map = {
         "music" : "KZFzniwnSyZfZ7v7nJ",
@@ -39,24 +39,25 @@ class TicketMasterAPI(DetailView):
             return HttpResponse("Error missing params", status=400)
 
         category = convert_category_to_id(data["category"])
-
         try:
             distance = int(data["distance"])
         except ValueError:
             return HttpResponse("Error parsing distance", status=400)
 
-        maps_url = google_maps_url + "?address=" + data["location"] + "&key=" + settings.GOOGLE_MAPS_API_KEY
+        if data["location_type"] != "geo":
+            maps_url = google_maps_url + "?address=" + data["location"] + "&key=" + settings.GOOGLE_MAPS_API_KEY
 
-        resp = requests.get(maps_url)
-        if resp.status_code < 200 or resp.status_code >= 300:
-            return HttpResponse("Error interpreting your location", status=500)
+            resp = requests.get(maps_url)
+            if resp.status_code < 200 or resp.status_code >= 300:
+                return HttpResponse("Error interpreting your location", status=500)
 
-        try:
-            print(resp.json())
-            location = resp.json()["results"][0]["geometry"]["location"]
-            geoPoint = str(location["lat"]) + "," + str(location["lng"])
-        except Exception as e:
-            return HttpResponse("Error interpreting your location", status=400)
+            try:
+                location = resp.json()["results"][0]["geometry"]["location"]
+                geoPoint = str(location["lat"]) + "," + str(location["lng"])
+            except Exception as e:
+                return HttpResponse("Error interpreting your location", status=400)
+        else:
+            geoPoint = data["location"]
 
         url = ticketmaster_url + "events"
         url += "?geoPoint=" + geoPoint
@@ -65,8 +66,6 @@ class TicketMasterAPI(DetailView):
         url += "&category=" + category
         url += "&keyword=" + data["keyword"].replace(" ", "+")
         url += "&apikey=" + settings.CONSUMER_KEY
-
-        print(url)
 
         resp = requests.get(url)
         if resp.status_code < 200 or resp.status_code >= 300:

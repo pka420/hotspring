@@ -15,7 +15,7 @@ const initialState: ticketState = {
     favourites: [],
     isResultsLoading: false,
     isFavouritesLoading: false,
-    results: null,
+    results: null
 };
 
 export const getKeywordSuggestions = createAsyncThunk<

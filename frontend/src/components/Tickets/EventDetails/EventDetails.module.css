@@ -3,6 +3,13 @@
     justify-content: center;
     align-items: center;
     margin-bottom: 20px;
+	background-color: transparent;
+    color: #fff !important;
+}
+
+.tab {
+    background-color: transparent;
+    color: #fff !important;
 }
 
 .title {
@@ -40,4 +47,5 @@
 .expandIcon {
     margin-top: 4px;
 }
+
 

@@ -9,20 +9,20 @@ import IconButton from "@mui/material/IconButton";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 
-createTheme("solarized", {
+createTheme("transparent", {
     text: {
-        primary: "#268bd2",
-        secondary: "#2aa198",
+        primary: "#fff",
+        secondary: "#fff",
     },
     background: {
-        default: "#002b36",
+        default: 'transparent',
     },
     context: {
-        background: "#cb4b16",
+        background: 'transparent',
         text: "#FFFFFF",
     },
     divider: {
-        default: "#073642",
+        default: "#fff",
     },
     action: {
         button: "rgba(0,0,0,.54)",
@@ -104,6 +104,7 @@ const EventList: React.FC<EventListProps> = ({ data, title, fetchEvents }) => {
         <>
             <Box p={10}>
                 <DataTable
+                    theme="transparent"
                     title={<Typography variant="h4">Events</Typography>}
                     columns={columns}
                     data={data._embedded.events}
@@ -121,12 +122,12 @@ const EventList: React.FC<EventListProps> = ({ data, title, fetchEvents }) => {
                     expandableIcon={{
                         collapsed: (
                             <IconButton size="small">
-                                <ExpandMore />
+                                <ExpandMore style={{ color: "#fff" }} />
                             </IconButton>
                         ),
                         expanded: (
                             <IconButton size="small">
-                                <ExpandLess />
+                                <ExpandLess style={{ color: "#fff" }} />
                             </IconButton>
                         ),
                     }}

@@ -54,6 +54,7 @@ const Form = () => {
             category: string;
             location: string;
             autoDetect: boolean;
+            city: string;
         }
     >({
         keyword: "",
@@ -61,7 +62,18 @@ const Form = () => {
         category: "",
         location: "",
         autoDetect: false,
+        city: "",
     });
+
+    React.useEffect(() => {
+        if (location.hasOwnProperty("city") && state.autoDetect) {
+            setState({ ...state, city: location.city });
+        }
+        else {
+            setState({ ...state, city: "" });
+        }
+    }, [location, state.autoDetect]);
+
 
     const handleAutoDetect = (event: React.ChangeEvent<HTMLInputElement>) => {
         setState({ ...state, autoDetect: event.target.checked, location: "" });
@@ -117,10 +129,12 @@ const Form = () => {
             distance: state.distance,
             category: state.category,
             keyword: state.keyword,
+			location_type: "string",
         };
 
         if (state.autoDetect) {
-            body.location = location;
+            body.location = location.loc;
+			body.location_type = "geo";
         }
         dispatch(getEvents(body));
     }
@@ -133,6 +147,7 @@ const Form = () => {
             category: "",
             location: "",
             autoDetect: false,
+            city: "",
         });
     };
 
@@ -262,7 +277,7 @@ const Form = () => {
                                 </Grid>
                                 <Grid item xs={12}>
                                     <FormControlLabel
-                                        label="Auto-detect your location"
+                                        label={"Auto-detect your location " + state.city}
                                         control={
                                             <Checkbox
                                                 style={{ color: "#fff" }}
