@@ -1,5 +1,5 @@
 #!/bin/bash
-repo_root=$(dirname ${BASH_SOURCE})/../..
+repo_root=$(dirname ${BASH_SOURCE})/..
 source $repo_root/.env
 
 cat <<EOF > ./nginx/conf.d/default.conf
@@ -8,13 +8,10 @@ server {
     listen 443 ssl;
     server_name ${site_url} www.${site_url};
 
-    ssl_certificate /etc/nginx/ssl/live/$site_url/fullchain.pem;
-    ssl_certificate_key /etc/nginx/ssl/live/$site_url/privkey.pem;
+    ssl_certificate /etc/letsencrypt/live/$site_url/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/$site_url/privkey.pem;
 
     client_max_body_size 50M;
-
-    ssl_dhparam /etc/nginx/ssl/ssl-dhparams.pem;
-    include /etc/nginx/ssl/options-ssl-nginx.conf;
 
     root /var/html;
     index index.html;

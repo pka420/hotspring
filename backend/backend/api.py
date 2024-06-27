@@ -105,8 +105,7 @@ class KeywordSuggestionsAPI(DetailView):
 
 class GeoLocationAPI(DetailView):
     def get(self, request):
-        remote_addr = request.META['REMOTE_ADDR']
-        print(remote_addr)
+        remote_addr = request.META['HTTP_X_REAL_IP']
         url = "https://ipinfo.io/" + remote_addr + "?token=" + settings.IPINFO_TOKEN
 
         resp = requests.get(url)
